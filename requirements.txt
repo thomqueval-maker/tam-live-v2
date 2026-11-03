@@ -1,5 +1,0 @@
-Flask>=3.0,<4.0
-requests>=2.31,<3.0
-gtfs-realtime-bindings>=3.0,<4.0
-gunicorn>=23,<24
-tzdata>=2024.1
