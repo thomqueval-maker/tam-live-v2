@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f5">
+  <title>Statistiques TAM · Montpellier</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=14">
+  <link rel="stylesheet" href="{{ url_for('static', filename='stats.css') }}?v=1">
+</head>
+<body class="stats-page">
+  <header class="stats-header">
+    <a class="stats-back" href="{{ url_for('index') }}"><span aria-hidden="true">←</span> Carte en direct</a>
+    <div class="stats-brand">
+      <p class="eyebrow">RÉSEAU TAM · MONTPELLIER</p>
+      <h1>Statistiques du réseau</h1>
+    </div>
+    <div id="collector-status" class="collector-status" role="status"><span></span>Initialisation…</div>
+  </header>
+
+  <main class="stats-main">
+    <section class="stats-intro">
+      <div>
+        <h2>Retards observés</h2>
+        <p>Évolution et comparaison des retards des bus et des trams.</p>
+      </div>
+      <div class="period-picker" role="group" aria-label="Période des statistiques">
+        <button type="button" data-period="24h" aria-pressed="false">24 h</button>
+        <button type="button" data-period="7d" aria-pressed="false">7 jours</button>
+        <button type="button" data-period="30d" aria-pressed="true">30 jours</button>
+      </div>
+    </section>
+
+    <p id="stats-notice" class="stats-notice" role="status">Connexion à l’historique des relevés…</p>
+
+    <section class="metric-grid" aria-label="État actuel du réseau">
+      <article class="metric-card metric-primary"><span>Retard cumulé actuel</span><strong id="metric-delay">—</strong><small>Somme des retards positifs connus</small></article>
+      <article class="metric-card"><span>Véhicules à plus de 5 min</span><strong id="metric-late">—</strong><small>Bus et trams en circulation</small></article>
+      <article class="metric-card"><span>Retard moyen par véhicule</span><strong id="metric-average">—</strong><small>Parmi les retards connus</small></article>
+      <article class="metric-card"><span>Couverture des données</span><strong id="metric-coverage">—</strong><small id="metric-coverage-detail">Véhicules avec retard connu</small></article>
+    </section>
+
+    <section class="stats-grid two-columns">
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">ÉVOLUTION</p><h2>Retard cumulé</h2></div><span class="chart-unit">minutes</span></div>
+        <p class="chart-description">Somme des retards positifs des véhicules renseignés.</p>
+        <div id="delay-chart" class="chart-area"></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">ÉVOLUTION</p><h2>Véhicules en retard</h2></div><span class="chart-unit">véhicules</span></div>
+        <p class="chart-description">Nombre de véhicules avec plus de cinq minutes de retard.</p>
+        <div id="late-chart" class="chart-area"></div>
+      </article>
+    </section>
+
+    <section class="stats-grid two-columns">
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">RYTHME QUOTIDIEN</p><h2>Retard moyen par heure</h2></div><span class="chart-unit">minutes</span></div>
+        <p class="chart-description">Moyenne des relevés observés à chaque heure.</p>
+        <div id="hour-chart" class="chart-area compact-chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">RYTHME HEBDOMADAIRE</p><h2>Retard moyen par jour</h2></div><span class="chart-unit">minutes</span></div>
+        <p class="chart-description">Comparaison des jours de la semaine sur les 30 derniers jours.</p>
+        <div id="weekday-chart" class="chart-area compact-chart"></div>
+      </article>
+    </section>
+
+    <section class="stats-grid two-columns">
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">RYTHME QUOTIDIEN</p><h2>Véhicules en retard par heure</h2></div><span class="chart-unit">véhicules</span></div>
+        <p class="chart-description">Moyenne des véhicules à plus de cinq minutes de retard.</p>
+        <div id="hour-late-chart" class="chart-area compact-chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="chart-heading"><div><p class="eyebrow">RYTHME HEBDOMADAIRE</p><h2>Véhicules en retard par jour</h2></div><span class="chart-unit">véhicules</span></div>
+        <p class="chart-description">Moyenne sur les 30 derniers jours observés.</p>
+        <div id="weekday-late-chart" class="chart-area compact-chart"></div>
+      </article>
+    </section>
+
+    <section class="stats-grid two-columns lower-panels">
+      <article class="table-card">
+        <div class="chart-heading"><div><p class="eyebrow">JOURNÉES PERTURBÉES</p><h2>Classement des jours</h2></div></div>
+        <p class="chart-description">Trié par retard cumulé moyen pendant les périodes observées.</p>
+        <div class="table-scroll"><table><thead><tr><th>Jour</th><th>Moyenne</th><th>Pic</th><th>Pic &gt; 5 min</th></tr></thead><tbody id="daily-ranking"></tbody></table></div>
+      </article>
+      <article class="table-card line-table-card">
+        <div class="chart-heading"><div><p class="eyebrow">COMPARAISON</p><h2>Retards par ligne</h2></div></div>
+        <p class="chart-description">Retard cumulé moyen et véhicules en retard, ligne par ligne.</p>
+        <div id="line-ranking" class="line-ranking"></div>
+      </article>
+    </section>
+    <p id="sample-footnote" class="sample-footnote">Les graphiques se rempliront au fil des relevés.</p>
+  </main>
+
+  <script src="{{ url_for('static', filename='tam-stats-store.js') }}?v=1"></script>
+  <script src="{{ url_for('static', filename='stats.js') }}?v=2"></script>
+</body>
+</html>
